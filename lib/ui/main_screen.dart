@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'colors.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'myrecipes/my_recipes_list.dart';
 import 'recipes/recipe_list.dart';
 import 'shopping/shopping_list.dart';
@@ -18,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   List<Widget> pageList = <Widget>[];
   // TODO: Add index key
+  static const String prefSelectedIndexLKey = 'selectedIndex';
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
     pageList.add(const MyRecipesList());
     pageList.add(const ShoppingList());
     // TODO: Call getCurrentIndex
+    getCurrentIndex();
   }
 
   void _onItemTapped(int index) {
@@ -33,6 +35,24 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
     // TODO: Call saveCurrentIndex
+   saveCurrentIndex();
+  }
+
+  void saveCurrentIndex() async{
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt(prefSelectedIndexLKey, _selectedIndex);
+  }
+
+  void getCurrentIndex() async{
+    final prefs = await SharedPreferences.getInstance();
+    if(prefs.containsKey(prefSelectedIndexLKey)){
+      final index = prefs.getInt(prefSelectedIndexLKey);
+      setState(() {
+        if(index != null){
+          _selectedIndex = index;
+        }
+      });
+    }
   }
 
   @override

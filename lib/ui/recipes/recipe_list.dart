@@ -68,6 +68,8 @@ class _RecipeListState extends State<RecipeList> {
     prefs.setStringList(prefSearchKey, previousSearches);
   }
 
+
+
   void getPreviousSearches() async {
     final prefs = await SharedPreferences.getInstance();
     if(prefs.containsKey(prefSearchKey)){
@@ -137,8 +139,34 @@ class _RecipeListState extends State<RecipeList> {
                               savePreviousSearches();
                             }
                           },
+                          controller: searchTextController,
                         ),
-                    )
+                    ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: lightGrey,
+                      ),
+                      onSelected: (String value) {
+                        searchTextController.text = value;
+                        startSearch(searchTextController.text);
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return previousSearches
+                            .map<CustomDropdownMenuItem<String>>((String value) {
+                          return CustomDropdownMenuItem<String>(
+                            text: value,
+                            value: value,
+                            callback: () {
+                              setState(() {
+                                previousSearches.remove(value);
+                                Navigator.pop(context);
+                              });
+                            },
+                          );
+                        }).toList();
+                      },
+                    ),
                   ],
                 ),
             ),
